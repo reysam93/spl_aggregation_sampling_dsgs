@@ -13,5 +13,8 @@ This repository is organized as follows:
 * **check_node_influence.m**: script for running the first experiment of the letter, which is shown in the figure 1.a.
 * **real_data_example.m**: script for running the second experiment of the letter, which is shown in the figure 1.b.
 
+## Dependencies
+For running the different scripts of this repository it is neccessary to have installed [CVX](http://cvxr.com/cvx/) and [The Graph Signal Processing Toolbox](https://epfl-lts2.github.io/gspbox-html/).
+
 ## References
 [1] P. D. Dobson and A. J. Doig, “Distinguishing enzyme structures from non-enzymes without alignments,” Journal of molecular biology, vol. 330, no. 4, pp. 771–783, 2003.
