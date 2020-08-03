@@ -1,4 +1,4 @@
-function [cell_A, cell_X] = read_graph_from_files(files, n_graphs)
+function [cell_A, cell_X, g_labels] = read_graph_from_files(files, n_graphs)
 % Read the graph data obtained from https://ls11-www.cs.tu-dortmund.de/staff/morris/graphkerneldatasets
 % and return two cell arrays with the adyacency matrix and the node's attributes
 % Arguments:
@@ -9,7 +9,7 @@ function [cell_A, cell_X] = read_graph_from_files(files, n_graphs)
 cell_A = {};
 cell_X = {};
 if ~isfield(files,'A') || ~isfield(files,'graph_indicator')...
-        || ~isfield(files,'node_attribute')
+        || ~isfield(files,'node_attribute') || ~isfield(files,'graph_label')
     disp('Missing struct fields')
     return 
 end
@@ -17,6 +17,7 @@ end
 AA = dlmread(files.A);
 g_indicator = dlmread(files.graph_indicator);
 nodes_attr = dlmread(files.node_attribute);
+g_labels = dlmread(files.graph_label);
 
 if nargin < 2 || n_graphs > g_indicator(end)
    n_graphs = g_indicator(end);
@@ -35,6 +36,10 @@ for i=1:n_graphs
     row_idx = AA(idx,1)-(first_node-1);
     col_idx = AA(idx,2)-(first_node-1);
     A(sub2ind(size(A),row_idx,col_idx)) = 1;
+    
+    assert(sum(diag(A))==0,'ERR: diagonal of A is not 0')
+    assert(sum(sum(A-A'))==0,'ERR: A is not symmetric')
+    
     cell_A{i} = A;
     first_node = last_node + 1;
 end

@@ -1,4 +1,4 @@
-function [A,D] = adajacency_from_stations(stations_data, max_km)
+function [A,D] = adjacency_from_stations(stations_data, max_km)
 % Constants
 COOR_TO_MILES = 60;
 MILES_TO_KM = 1.852;

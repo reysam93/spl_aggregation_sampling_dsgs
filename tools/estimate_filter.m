@@ -20,6 +20,7 @@ ee = cell(n_graphs,1);
 err_no_skip = zeros(n_graphs,1);
 mean_err = zeros(n_graphs,1);
 mean_sparsity = zeros(n_graphs,1);
+sel_labels = zeros(n_graphs,1);
 skipped = 0;
 for i=1:n_graphs
     % Select data from graph i
@@ -27,6 +28,7 @@ for i=1:n_graphs
     A = cell_A{i};
     N = length(A);
     hh_freq{i} = [];
+    label = g_labels(i);
     
     % Eigendecomposition of the GSO
     if strcmp(gso,'L')
@@ -41,7 +43,7 @@ for i=1:n_graphs
     
     % Limiting graph size
     if N < min_nodes || N > max_nodes
-        skipped = skipped + 1;
+        skipped = skipped + 0;
         continue
     end
     
@@ -57,8 +59,10 @@ for i=1:n_graphs
     vv{i} = V;
     ee{i} = e;
     err_no_skip(i) = norm(V*diag(h_freq)*V'*s_est-x);
-    disp(['Graph ' num2str(i) '   N: ' num2str(length(A)) '   Sparsity: '... 
-        num2str(sum(abs(s_est)>0)) '   MSE: ' num2str(err_no_skip(i))])
+    sel_labels(i) = label;
+    disp(['Graph ' num2str(i) '   Label: ' num2str(label) '   N: '...
+        num2str(length(A)) '   Sparsity: ' num2str(sum(abs(s_est)>0))...
+        '   MSE: ' num2str(err_no_skip(i))])
 end
 
 % Remove skipped graphs from data
@@ -70,6 +74,7 @@ EE = cell(n_graphs-skipped,1);
 err_skip = zeros(n_graphs-skipped,1);
 max_h = zeros(n_graphs-skipped,1);
 sparsity = zeros(n_graphs-skipped,1);
+G_labels = zeros(n_graphs-skipped,1);
 cont = 1;
 for j=1:n_graphs
     if isempty(hh_freq{j})
@@ -83,6 +88,7 @@ for j=1:n_graphs
     max_h(cont) = max(hh_freq{j});
     err_skip(cont) = err_no_skip(j);
     sparsity(cont) = sum(abs(estimated_ss{j})>0);
+    G_labels(cont) = sel_labels(j);
     cont = cont + 1;
 end
 toc
@@ -91,8 +97,10 @@ disp(['Mean sparsity:   ' num2str(mean(sparsity))])
 disp(['Mean MSE:        ' num2str(mean(err_skip))])
 disp(['Selected graphs: ' num2str(length(XX))])
 disp(['Mean Max h       ' num2str(mean(max_h))])
+disp(['Labels 1: ' num2str(sum(G_labels==1)) ' out of ' num2str(sum(g_labels==1))])
+disp(['Labels 2: ' num2str(sum(G_labels==2)) ' out of ' num2str(sum(g_labels==2))])
 
 if save_data
     save(['..\dataset\all_data_eig' gso '_x' num2str(attr) '_S' num2str(S)],...
-            'EE', 'VV', 'XX', 'SS', 'HH_Freq')
+            'EE', 'VV', 'XX', 'SS', 'HH_Freq', 'G_labels')
 end
